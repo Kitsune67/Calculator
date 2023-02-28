@@ -3,11 +3,16 @@
   <head>
     <title>Calculator</title>
     <meta charset="UTF-8" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="src/style.css" />
   </head>
   <body>
-    <div class="calculator">
+    <div class="calculator" oncopy="return false">
       <div class="display"></div>
       <div class="buttons">
         <button class="button-up">AC</button>
@@ -26,13 +31,11 @@
         <button class="button-main">2</button>
         <button class="button-main">3</button>
         <button class="button-right">+</button>
-        <button class="button-main button-null">
-          <span class="null">0</span>
-        </button>
+        <button class="button-main button-null">0</button>
         <button class="button-main">,</button>
         <button class="button-right">=</button>
       </div>
     </div>
-    <script src="src/index.js"></script>
+    <script src="src/main.js"></script>
   </body>
 </html>

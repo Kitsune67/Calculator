@@ -1,14 +1,17 @@
+* {
+  font-family: 'Inter', sans-serif;
+}
+
 body {
   overflow: hidden;
   background-color: gray;
-  font-family: 'Inter', sans-serif;
 }
 .calculator {
   margin: auto;
   width: 360px;
   border: white 1px solid;
   padding: 28px 15px;
-  background-color: #1c1c1c;
+  background-color: #000000;
   border-radius: 40px;
 }
 .buttons {
@@ -29,8 +32,10 @@ body {
 button {
   height: 80px;
   width: 80px;
-  font-size: 30px;
-  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
   border-radius: 50%;
   margin: 4px;
   border: none;
@@ -38,32 +43,40 @@ button {
 }
 .button-null {
   text-align: start;
+  display: block;
   width: 172px;
   border-radius: 55px;
   grid-column: 1/3;
+  padding-left: 31px;
 }
-.null {
-  padding-left: 20px;
-}
+
 .button-up {
-  background-color: #d4d4d2;
-}
-.button-up:active {
-  background-color: white;
+  background-color: #9f9f9f;
+  font-size: 28px;
 }
 
 .button-main {
-  background-color: #505050;
-  color: white;
+  background-color: #313131;
+  color: #f6f6f6;
+  font-size: 36px;
 }
-.button-main:active {
-  filter: brightness(120%);
-}
+
 .button-right {
-  background-color: #ff9500;
-  color: white;
+  background-color: #f69906;
+  color: #f6f6f6;
+  font-size: 48px;
+  padding-bottom: 9px;
+  font-weight: 400;
 }
+
+/*styles for active elements*/
 .button-right_active {
   background-color: white;
   color: #ff9500;
+}
+.button-up_active {
+  background-color: white;
+}
+.button-main_active {
+  filter: brightness(140%);
 }
