@@ -12,10 +12,16 @@ let hasFirstNumber,
   firstNumber,
   firstNumberOfDots,
   secondNumberOfDots,
+  afterEqual,
+  secondPercent,
+  firstPercent,
+  setMinus,
   setComma;
 firstNumber = secondNumber = '';
-firstNumberOfDots = secondNumberOfDots = 0;
+firstNumberOfDots = secondNumberOfDots = minuslenght = 0;
+let result = 0;
 let currentButton;
+let maxLenght = 11; //default max leght
 
 calculator.addEventListener('pointerdown', e => {
   var button = e.target;
@@ -28,7 +34,7 @@ calculator.addEventListener('pointerdown', e => {
     if (
       Array.from(firstNumber).filter(elem => elem != '.').length +
         firstNumberOfDots ==
-      11
+      maxLenght
     ) {
       hasFirstNumber = true;
     }
@@ -40,6 +46,15 @@ calculator.addEventListener('pointerdown', e => {
       hasSecondNumber = true;
     }
     if (!hasFirstNumber) {
+      if (afterEqual) {
+        if (result != 0) {
+          firstNumber = result.toString();
+        }
+
+        document
+          .querySelector('.button-equal')
+          .classList.remove('button-right_active');
+      }
       firstNumber += button.firstChild.data;
       firstNumberDisplayOutput();
     }
@@ -57,14 +72,149 @@ calculator.addEventListener('pointerdown', e => {
     button.classList.add('button-right_active');
     resultSum();
   }
+  if (button.classList.contains('button-plusminus')) {
+    if (!hasSign) {
+      let rez = [];
+      if (!setMinus) {
+        if (firstNumber.length >= 11) {
+          display.style.fontSize = '55px';
+          maxLenght = 12;
+        }
+        for (let i = 0; i < firstNumber.length + 1; i++) {
+          if (i === 0) {
+            rez.push('-');
+            continue;
+          }
+          rez.push(firstNumber[i - 1]);
+        }
+        setMinus = true;
+      } else {
+        for (let i = 1; i < firstNumber.length; i++) {
+          rez.push(firstNumber[i]);
+        }
+        setMinus = false;
+        maxLenght = 11;
+      }
+
+      firstNumber = rez.join('');
+      switch (firstNumber.length) {
+        case 9:
+          display.style.fontSize = '70px';
+          break;
+        case 10:
+          display.style.fontSize = '65px';
+          break;
+        case 11:
+          display.style.fontSize = '60px';
+          break;
+      }
+      display.innerHTML = firstNumber;
+    } else {
+      let rez = [];
+      if (!setMinus) {
+        if (firstNumber.length >= 11) {
+          display.style.fontSize = '55px';
+          maxLenght = 12;
+        }
+        for (let i = 0; i < secondNumber.length + 1; i++) {
+          if (i === 0) {
+            rez.push('-');
+            continue;
+          }
+          rez.push(secondNumber[i - 1]);
+        }
+        setMinus = true;
+      } else {
+        for (let i = 1; i < secondNumber.length; i++) {
+          rez.push(firstNumber[i]);
+        }
+        setMinus = false;
+        maxLenght = 11;
+      }
+
+      secondNumber = rez.join('');
+      switch (secondNumber.length) {
+        case 9:
+          display.style.fontSize = '70px';
+          break;
+        case 10:
+          display.style.fontSize = '65px';
+          break;
+        case 11:
+          display.style.fontSize = '60px';
+          break;
+      }
+
+      display.innerHTML = secondNumber;
+    }
+  } else if (button.classList.contains('button-percent')) {
+    if (!hasSign) {
+      if (!firstPercent) {
+        firstNumber =
+          +Array.from(firstNumber)
+            .filter(elem => elem != '.')
+            .join('') / 100;
+        firstPercent = true;
+        firstNumber = firstNumber.toString();
+      } else {
+        firstNumber = +firstNumber / 100;
+        firstNumber = firstNumber.toString();
+      }
+      if (firstNumber.length > 11) {
+        firstNumber = Number(firstNumber).toFixed(6);
+      }
+      display.innerHTML = firstNumber;
+    } else {
+      if (!secondPercent) {
+        secondNumber =
+          +Array.from(secondNumber)
+            .filter(elem => elem != '.')
+            .join('') / 100;
+        secondPercent = true;
+        secondNumber = secondNumber.toString();
+      } else {
+        secondNumber = +secondNumber / 100;
+        secondNumber = secondNumber.toString();
+      }
+      if (firstNumber.length > 11) {
+        firstNumber = +firstNumber.toFixed(1);
+      } else if (secondNumber.length > 11) {
+        secondNumber = +secondNumber.toFixed(1);
+      }
+      display.innerHTML = secondNumber;
+    }
+  }
+  // console.log(firstNumber.length);
+  if (firstNumber.length != 0) {
+    document.querySelector('.button-clear').firstChild.data = 'C';
+  }
+  if (firstNumber == 0) {
+    firstNumber = '';
+  }
 });
 document.addEventListener('pointerup', e => {
   currentButton.classList.remove('button-main_active');
   currentButton.classList.remove('button-up_active');
+  if (currentButton.classList.contains('button-clear')) {
+    document.querySelector('.button-clear').firstChild.data = 'AC';
+    display.innerHTML = '';
+    hasFirstNumber = hasSecondNumber = hasSign = setComma = false;
+    firstNumberOfDots = secondNumberOfDots = 0;
+    secondNumber = firstNumber = '';
+    for (const button of buttons) {
+      button.classList.remove('button-right_active');
+    }
+    sign = null;
+    result = 0;
+  }
 });
 
 function firstNumberDisplayOutput() {
-  console.log(firstNumber, 1);
+  if (afterEqual) {
+    result = 0;
+    afterEqual = false;
+  }
+  // console.log(firstNumber, 1);
 
   switch (firstNumber.length) {
     case 9:
@@ -85,7 +235,7 @@ function firstNumberDisplayOutput() {
       let index = firstNumber.indexOf(',') - 1;
       console.log(firstNumber[index]);
       if (firstNumber[index] == '.') {
-        let rez = Array.from(firstNumber);
+        let rez = Array.from(firstNumber).filter(elem => +elem === true);
         rez.splice(index, 1);
         firstNumber = rez.join('');
       }
@@ -96,7 +246,16 @@ function firstNumberDisplayOutput() {
     }
   } else {
     display.innerHTML = firstNumber;
-    if (firstNumber.length == 3 || firstNumber.length == 7) {
+    if (
+      firstNumber.length == 3 ||
+      (firstNumber.length == 7 && setMinus != true)
+    ) {
+      firstNumber += '.';
+      firstNumberOfDots++;
+    } else if (
+      (setMinus == true && firstNumber.length == 4) ||
+      firstNumber.length == 8
+    ) {
       firstNumber += '.';
       firstNumberOfDots++;
     }
@@ -105,11 +264,13 @@ function firstNumberDisplayOutput() {
   display.innerHTML = firstNumber;
 }
 function secondNumberDisplayOutput() {
-  console.log(secondNumber, 2);
+  // console.log(secondNumber, 2);
   if (!displayCleaned) {
     display.innerHTML = '';
     displayCleaned = true;
+    display.style.fontSize = '80px';
   }
+
   for (const button of buttons) {
     button.classList.remove('button-right_active');
   }
@@ -143,7 +304,16 @@ function secondNumberDisplayOutput() {
     }
   } else {
     display.innerHTML = secondNumber;
-    if (secondNumber.length == 3 || secondNumber.length == 7) {
+    if (
+      secondNumber.length == 3 ||
+      (secondNumber.length == 7 && setMinus != true)
+    ) {
+      secondNumber += '.';
+      secondNumberOfDots++;
+    } else if (
+      (setMinus == true && secondNumber.length == 4) ||
+      secondNumber.length == 8
+    ) {
       secondNumber += '.';
       secondNumberOfDots++;
     }
@@ -168,13 +338,23 @@ function setSign(button) {
 }
 function resultSum() {
   display.innerHTML = '';
-  let result = 0;
-  let firstOperand = +Array.from(firstNumber)
-    .filter(elem => elem != '.')
-    .join('');
-  let secondOperand = +Array.from(secondNumber)
-    .filter(elem => elem != '.')
-    .join('');
+  let secondOperand, firstOperand;
+  afterEqual = true;
+  if (!firstPercent) {
+    firstOperand = +Array.from(firstNumber)
+      .filter(elem => elem != '.')
+      .join('');
+  } else {
+    firstOperand = firstNumber;
+  }
+  if (!secondPercent) {
+    secondOperand = +Array.from(secondNumber)
+      .filter(elem => elem != '.')
+      .join('');
+  } else {
+    secondOperand = secondNumber;
+  }
+
   switch (sign) {
     case '/':
       result = firstOperand / secondOperand;
@@ -189,7 +369,26 @@ function resultSum() {
       result = firstOperand + secondOperand;
       break;
   }
-  if (result > 11) {
+  for (const button of buttons) {
+    button.classList.remove('button-right_active');
+  }
+
+  if (result.toString().length > 9) {
+    display.style.fontSize = '70px';
+  } else if (result.toString().length > 10) {
+    display.style.fontSize = '65px';
+  } else if (result.toString().length > 11) {
+    display.style.fontSize = '60px';
+  }
+
+  // display.innerHTML = '';
+  hasFirstNumber = hasSecondNumber = hasSign = setComma = false;
+  firstNumberOfDots = secondNumberOfDots = 0;
+  secondNumber = firstNumber = '';
+  sign = null;
+  console.log('work');
+
+  if (result.toString().length > 10) {
     result = result.toExponential(2);
   }
   display.innerHTML = result;
