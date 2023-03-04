@@ -57,6 +57,7 @@ button {
 .button-up {
   background-color: #9f9f9f;
   font-size: 28px;
+  color: #000000;
 }
 
 .button-main {
@@ -92,20 +93,33 @@ button {
 }
 @media screen and (max-width: 600px) {
   .calculator {
-    width: 100%;
+    width: 90%;
     height: 100%;
     margin: 0;
+    margin: auto;
     border-radius: 0px;
     border: none;
   }
   body {
     margin: 0;
+    background-color: #000000;
     height: 100%;
+    overflow: hidden;
+    position: fixed;
+    touch-action: none;
+  }
+  .button-right,
+  .button-equal {
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+    padding: 0;
+    padding-bottom: 9px;
   }
   .buttons {
     margin: auto;
     display: grid;
-
+    gap: 0;
     margin: auto;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 80px 80px 80px 80px 80px;
