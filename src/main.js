@@ -150,10 +150,13 @@ calculator.addEventListener('pointerdown', e => {
   } else if (button.classList.contains('button-percent')) {
     if (!hasSign) {
       if (!firstPercent) {
-        firstNumber =
-          +Array.from(firstNumber)
-            .filter(elem => elem != '.')
-            .join('') / 100;
+        firstNumber = Array.from(firstNumber).filter(elem => elem != '.');
+        for (let i = 0; i < firstNumber.length; i++) {
+          if (firstNumber[i] === ',') {
+            firstNumber[i] = '.';
+          }
+        }
+        firstNumber = +firstNumber.join('') / 100;
         firstPercent = true;
         firstNumber = firstNumber.toString();
       } else {
@@ -166,10 +169,13 @@ calculator.addEventListener('pointerdown', e => {
       display.innerHTML = firstNumber;
     } else {
       if (!secondPercent) {
-        secondNumber =
-          +Array.from(secondNumber)
-            .filter(elem => elem != '.')
-            .join('') / 100;
+        secondNumber = Array.from(secondNumber).filter(elem => elem != '.');
+        for (let i = 0; i < secondNumber.length; i++) {
+          if (secondNumber[i] === ',') {
+            secondNumber[i] = '.';
+          }
+        }
+        secondNumber = +secondNumber.join('') / 100;
         secondPercent = true;
         secondNumber = secondNumber.toString();
       } else {
@@ -188,10 +194,8 @@ calculator.addEventListener('pointerdown', e => {
   if (firstNumber.length != 0) {
     document.querySelector('.button-clear').firstChild.data = 'C';
   }
-  if (firstNumber == 0) {
-    firstNumber = '';
-  }
 });
+
 document.addEventListener('pointerup', e => {
   currentButton.classList.remove('button-main_active');
   currentButton.classList.remove('button-up_active');
@@ -206,6 +210,7 @@ document.addEventListener('pointerup', e => {
     }
     sign = null;
     result = 0;
+    firstPercent = secondPercent = false;
   }
 });
 
@@ -233,10 +238,12 @@ function firstNumberDisplayOutput() {
       firstNumberOfDots = 1;
 
       let index = firstNumber.indexOf(',') - 1;
-      console.log(firstNumber[index]);
+
       if (firstNumber[index] == '.') {
-        let rez = Array.from(firstNumber).filter(elem => +elem === true);
-        rez.splice(index, 1);
+        let rez = Array.from(firstNumber).filter(
+          elem => elem != firstNumber[index]
+        );
+
         firstNumber = rez.join('');
       }
 
@@ -258,6 +265,16 @@ function firstNumberDisplayOutput() {
     ) {
       firstNumber += '.';
       firstNumberOfDots++;
+    }
+    if (
+      firstNumber[0] == 0 &&
+      !firstNumber.includes(',') &&
+      firstNumber.length >= 2
+    ) {
+      firstNumber = Array.from(firstNumber);
+      firstNumber.shift();
+      firstNumber = firstNumber.join('');
+      display.innerHTML = firstNumber;
     }
     return;
   }
@@ -291,10 +308,12 @@ function secondNumberDisplayOutput() {
       secondNumberOfDots = 1;
 
       let index = secondNumber.indexOf(',') - 1;
-      console.log(secondNumber[index]);
+
       if (secondNumber[index] == '.') {
-        let rez = Array.from(secondNumber);
-        rez.splice(index, 1);
+        let rez = Array.from(secondNumber).filter(
+          elem => elem != secondNumber[index]
+        );
+
         secondNumber = rez.join('');
       }
 
@@ -319,7 +338,7 @@ function secondNumberDisplayOutput() {
     }
     return;
   }
-  display.innerHTML = firstNumber;
+  display.innerHTML = secondNumber;
 }
 function setSign(button) {
   switch (button.firstChild.data) {
@@ -341,32 +360,51 @@ function resultSum() {
   let secondOperand, firstOperand;
   afterEqual = true;
   if (!firstPercent) {
-    firstOperand = +Array.from(firstNumber)
+    firstOperand = Array.from(firstNumber)
       .filter(elem => elem != '.')
       .join('');
   } else {
     firstOperand = firstNumber;
   }
   if (!secondPercent) {
-    secondOperand = +Array.from(secondNumber)
+    secondOperand = Array.from(secondNumber)
       .filter(elem => elem != '.')
       .join('');
   } else {
     secondOperand = secondNumber;
   }
+  let newFirstOperand = '';
+  for (let i = 0; i < firstOperand.length; i++) {
+    if (firstOperand[i] === ',') {
+      newFirstOperand += '.';
+    } else {
+      newFirstOperand += firstOperand[i];
+    }
+  }
+  let newSecondOperand = '';
+
+  for (let i = 0; i < secondOperand.length; i++) {
+    if (secondOperand[i] === ',') {
+      newSecondOperand += '.';
+    } else {
+      newSecondOperand += secondOperand[i];
+    }
+  }
+  firstOperand = newFirstOperand;
+  secondOperand = newSecondOperand;
 
   switch (sign) {
     case '/':
-      result = firstOperand / secondOperand;
+      result = +firstOperand / +secondOperand;
       break;
     case '*':
-      result = firstOperand * secondOperand;
+      result = +firstOperand * +secondOperand;
       break;
     case '-':
-      result = firstOperand - secondOperand;
+      result = +firstOperand - +secondOperand;
       break;
     case '+':
-      result = firstOperand + secondOperand;
+      result = +firstOperand + +secondOperand;
       break;
   }
   for (const button of buttons) {
@@ -387,7 +425,7 @@ function resultSum() {
   secondNumber = firstNumber = '';
   sign = null;
   console.log('work');
-
+  console.log(result);
   if (result.toString().length > 10) {
     result = result.toExponential(2);
   }
